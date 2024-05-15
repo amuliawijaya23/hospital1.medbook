@@ -1,0 +1,12 @@
+{
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "no-console": "off",
+    "prefer-destructuring": "off",
+    "camelcase": "off",
+    "no-restricted-syntax": ["off", "ForOfStatement"]
+  },
+  "extends": "airbnb-base"
+}
