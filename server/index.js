@@ -6,10 +6,13 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
 const http = require('http');
+const errorHandler = require('errorhandler');
+const session = require('express-session');
 
 const routers = require('./routers');
 
 const PORT = process.env.PORT || 3001;
+const SESSION_SECRET = process.env.SESSION_SECRET;
 
 const app = express();
 
@@ -17,6 +20,10 @@ app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
+app.use(errorHandler());
+app.use(
+  session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }),
+);
 
 app.use(routers());
 
