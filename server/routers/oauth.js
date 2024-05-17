@@ -67,7 +67,7 @@ module.exports = (router) => {
             });
         } else if (req.user.scope === 'read:medication') {
           axios
-            .get(`${SERVER_API}'/api/user/medication`, {
+            .get(`${SERVER_API}/api/user/medication`, {
               headers: {
                 Authorization: `Bearer ${req.user.accessToken}`,
               },
