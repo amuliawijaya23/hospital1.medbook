@@ -1,24 +1,38 @@
 const users = {};
 
 exports.find = function (id, done) {
-  return done(null, users[id]);
+  try {
+    if (!id) {
+      return done(null, false);
+    }
+    return done(null, users[id]);
+  } catch (error) {
+    done(error);
+  }
 };
 
 exports.updateOrCreate = function (profile, accessToken, refreshToken, done) {
-  let user = users[profile.id];
-  if (!user) {
-    user = {
-      id: profile.id,
-      email: profile.email,
-      scope: profile.scope,
-    };
+  try {
+    if (!profile || !accessToken || !refreshToken) {
+      return done(null, false);
+    }
 
-    users[profile.id] = user;
+    let user = users[profile.id];
+    if (!user) {
+      user = {
+        id: profile.id,
+        email: profile.email,
+      };
+
+      users[profile.id] = user;
+    }
+
+    user.accessToken = accessToken;
+    user.refreshToken = refreshToken;
+    user.scope = profile.scope;
+
+    return done(null, user);
+  } catch (error) {
+    return done(error);
   }
-
-  user.accessToken = accessToken;
-  user.refreshToken = refreshToken;
-  user.scope = profile.scope;
-
-  done(null, user);
 };
