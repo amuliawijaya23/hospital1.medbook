@@ -9,13 +9,13 @@
     <th>frequency</th>
   </tr>
   <% for (const m of medications) { %>
-  <form action="/oauth/authorize/medication/<%= m.name %>" method="post">
-    <tr>
-      <td><input type="text" name="name" value="<%= m.name %>" /></td>
-      <td><input type="text" name="dose" value="<%= m.dose %>" /></td>
-      <td><input type="text" name="frequency" value="<%= m.frequency %>" /></td>
-      <td><input type="submit" value="submit" /></td>
-    </tr>
-  </form>
+  <tr>
+    <td><%= m.name %></td>
+    <td><%= m.dose %></td>
+    <td><%= m.frequency %></td>
+    <form action="/oauth/authorize/medication/<%= m.name %>" method="post">
+      <td><input type="submit" value="Edit" /></td>
+    </form>
+  </tr>
   <% }%>
 </table>

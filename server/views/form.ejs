@@ -1,0 +1,21 @@
+<h1>Medication Form</h1>
+<form action="/oauth/user/medication/<%= name %>" method="post">
+  <div>
+    <label for="name">Name</label>
+    <% if (name) { %>
+    <input type="text" name="name" value="<%= name %>" hidden />
+    <input type="text" name="name" value="<%= name %>" disabled />
+    <% } else { %>
+    <input type="text" name="name" />
+    <% } %>
+  </div>
+  <div>
+    <label for="dose">Dose</label>
+    <input type="text" name="dose" />
+  </div>
+  <div>
+    <label for="frequency">Frequency</label>
+    <input type="text" name="frequency" />
+  </div>
+  <input type="submit" value="Submit" />
+</form>

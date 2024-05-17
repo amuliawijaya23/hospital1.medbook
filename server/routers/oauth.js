@@ -33,7 +33,7 @@ module.exports = (router) => {
       next,
     );
   };
-  router.get(
+  router.post(
     '/oauth/authorize/medication/:name',
     getParamsAndAuthenticate,
     (_req, _res) => {
@@ -58,7 +58,7 @@ module.exports = (router) => {
             })
             .then((response) => {
               const { data } = response;
-              res.render('account', { user: req.user });
+              res.render('/', { user: req.user });
             })
             .catch((e) => {
               console.log(e);
@@ -82,6 +82,11 @@ module.exports = (router) => {
               console.log(e);
               res.sendStatus(400);
             });
+        } else if (req.user.scope.split(':')[0] === 'write') {
+          res.render('form', {
+            user: req.user,
+            name: req.user.scope.split(':')[1],
+          });
         }
       } catch (error) {
         console.log(error);
@@ -90,99 +95,35 @@ module.exports = (router) => {
     },
   );
 
-  router.get('/oauth/user/medication', isAuthenticated, (req, res) => {
-    try {
-      const options = {
-        host: 'localhost',
-        path: '/api/user/medication',
-        port: '8080',
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${req.user.accessToken}`,
-        },
-      };
-
-      const postRequest = http.request(options, (response) => {
-        let str = '';
-        response.setEncoding('utf-8');
-        response.on('data', (chunk) => {
-          str += chunk;
-        });
-        response.on('end', () => {
-          const data = JSON.parse(str);
-          res.send(data);
-        });
-      });
-      postRequest.end();
-    } catch (error) {
-      console.log(error);
-      res.sendStatus(500);
-    }
-  });
-
-  router.get('/oauth/user/data', isAuthenticated, (req, res) => {
-    try {
-      if (!req.user) {
-        res.sendStatus(401);
-      }
-
-      const options = {
-        host: 'localhost',
-        path: '/api/user/data',
-        port: '8080',
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${req.user.accessToken}`,
-        },
-      };
-
-      const postRequest = http.request(options, (response) => {
-        let str = '';
-        response.setEncoding('utf-8');
-        response.on('data', (chunk) => {
-          str += chunk;
-        });
-        response.on('end', () => {
-          const data = JSON.parse(str);
-          res.status(200).json(data).end();
-        });
-      });
-
-      postRequest.end();
-    } catch (error) {
-      console.log(error);
-      res.sendStatus(500);
-    }
-  });
-
   router.post('/oauth/user/medication/:name', isAuthenticated, (req, res) => {
     try {
-      const options = {
-        host: 'localhost',
-        path: '/api/user/medication',
-        port: '8080',
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${req.user.accessToken}`,
-          'content-type': 'application/json',
-          accept: 'application/json',
-        },
-      };
-
-      const postRequest = http.request(options, (response) => {
-        response.setEncoding('utf-8');
-        response.on('data', (chunk) => {
-          console.log(`BODY: ${chunk}`);
-        });
-        response.on('end', () => {
-          console.log('END');
-        });
-        postRequest.on('error', (e) => {
+      if (!req.body.name || (!req.body.dose && !req.body.frequency)) {
+        console.log('HI');
+        return res.sendStatus(400);
+      }
+      axios
+        .post(
+          'http://localhost:8080/api/user/medication',
+          { ...req.body },
+          {
+            headers: {
+              Authorization: `Bearer ${req.user.accessToken}`,
+              'Content-Type': 'application/json',
+              accept: 'application/json',
+            },
+          },
+        )
+        .then((response) => {
+          const { data } = response;
+          res.render('medication', {
+            user: req.user,
+            medications: data.medical_records.medication,
+          });
+        })
+        .catch((e) => {
           console.log(e);
+          return res.sendStatus(400);
         });
-        postRequest.write(JSON.stringify(req.body));
-        postRequest.end();
-      });
     } catch (error) {
       console.log(error);
       res.sendStatus(500);
