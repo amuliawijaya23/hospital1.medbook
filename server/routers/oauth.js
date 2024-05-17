@@ -1,6 +1,7 @@
 const passport = require('passport');
 const http = require('http');
 const querystring = require('querystring');
+const axios = require('axios');
 
 const { isAuthenticated } = require('../middleware');
 
@@ -23,9 +24,18 @@ module.exports = (router) => {
       console.log('Authorizing request...');
     },
   );
+
+  const getParamsAndAuthenticate = (req, res, next) => {
+    const { name } = req.params;
+    passport.authenticate('medbook', { scope: `write:${name}` })(
+      req,
+      res,
+      next,
+    );
+  };
   router.get(
-    '/oauth/authorize/medication/update',
-    passport.authenticate('medbook', { scope: 'write:medication' }),
+    '/oauth/authorize/medication/:name',
+    getParamsAndAuthenticate,
     (_req, _res) => {
       console.log('Authorizing request...');
     },
@@ -40,52 +50,38 @@ module.exports = (router) => {
         }
 
         if (req.user.scope === 'read:userdata') {
-          const options = {
-            host: 'localhost',
-            path: '/api/user/data',
-            port: '8080',
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${req.user.accessToken}`,
-            },
-          };
-          const postRequest = http.request(options, (response) => {
-            let str = '';
-            response.setEncoding('utf-8');
-            response.on('data', (chunk) => {
-              str += chunk;
-            });
-            response.on('end', () => {
-              const data = JSON.parse(str);
+          axios
+            .get('http://localhost:8080/api/user/data', {
+              headers: {
+                Authorization: `Bearer ${req.user.accessToken}`,
+              },
+            })
+            .then((response) => {
+              const { data } = response;
               res.render('account', { user: req.user });
+            })
+            .catch((e) => {
+              console.log(e);
+              res.sendStatus(400);
             });
-          });
-          postRequest.end();
         } else if (req.user.scope === 'read:medication') {
-          const options = {
-            host: 'localhost',
-            path: '/api/user/medication',
-            port: '8080',
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${req.user.accessToken}`,
-            },
-          };
-          const postRequest = http.request(options, (response) => {
-            let str = '';
-            response.setEncoding('utf-8');
-            response.on('data', (chunk) => {
-              str += chunk;
-            });
-            response.on('end', () => {
-              const data = JSON.parse(str);
+          axios
+            .get('http://localhost:8080/api/user/medication', {
+              headers: {
+                Authorization: `Bearer ${req.user.accessToken}`,
+              },
+            })
+            .then((response) => {
+              const { data } = response;
               res.render('medication', {
                 user: req.user,
                 medications: data.medical_records.medication,
               });
+            })
+            .catch((e) => {
+              console.log(e);
+              res.sendStatus(400);
             });
-          });
-          postRequest.end();
         }
       } catch (error) {
         console.log(error);
@@ -159,7 +155,7 @@ module.exports = (router) => {
     }
   });
 
-  router.post('/oauth/user/medication', isAuthenticated, (req, res) => {
+  router.post('/oauth/user/medication/:name', isAuthenticated, (req, res) => {
     try {
       const options = {
         host: 'localhost',

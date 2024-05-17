@@ -7,7 +7,7 @@ module.exports = (router) => {
   router.get('/account', isAuthenticated, (req, res) => {
     res.render('account', { user: req.user });
   });
-  router.get('/login', isNotAuthenticated, (req, res) => {
+  router.get('/login', (req, res) => {
     res.render('login', { user: req.user });
   });
 };
