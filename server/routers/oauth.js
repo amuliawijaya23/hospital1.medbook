@@ -7,6 +7,7 @@ const { isAuthenticated } = require('../middleware');
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const SERVER_API = process.env.SERVER_API;
 
 module.exports = (router) => {
   router.get(
@@ -51,14 +52,14 @@ module.exports = (router) => {
 
         if (req.user.scope === 'read:userdata') {
           axios
-            .get('http://localhost:8080/api/user/data', {
+            .get(`${SERVER_API}/api/user/data`, {
               headers: {
                 Authorization: `Bearer ${req.user.accessToken}`,
               },
             })
             .then((response) => {
               const { data } = response;
-              res.render('/', { user: req.user });
+              res.render('index', { user: req.user });
             })
             .catch((e) => {
               console.log(e);
@@ -66,7 +67,7 @@ module.exports = (router) => {
             });
         } else if (req.user.scope === 'read:medication') {
           axios
-            .get('http://localhost:8080/api/user/medication', {
+            .get(`${SERVER_API}'/api/user/medication`, {
               headers: {
                 Authorization: `Bearer ${req.user.accessToken}`,
               },
@@ -98,12 +99,11 @@ module.exports = (router) => {
   router.post('/oauth/user/medication/:name', isAuthenticated, (req, res) => {
     try {
       if (!req.body.name || (!req.body.dose && !req.body.frequency)) {
-        console.log('HI');
         return res.sendStatus(400);
       }
       axios
         .post(
-          'http://localhost:8080/api/user/medication',
+          `${SERVER_API}/api/user/medication`,
           { ...req.body },
           {
             headers: {
