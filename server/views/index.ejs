@@ -1,0 +1,11 @@
+<% if (!user) { %>
+<h2>Welcome!</h2>
+<% } else { %>
+<h2>Hello, <%= user.email %>.</h2>
+<h3>Hospital1 Services:</h3>
+<ul>
+  <li><a href="/user/info">userinfo</a></li>
+  <li><a href="/user">personaldata</a></li>
+  <li><a href="/refresh_token">refresh_token</a></li>
+</ul>
+<% } %>
