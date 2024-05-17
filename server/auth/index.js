@@ -7,13 +7,14 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const CALLBACK_URL = process.env.CALLBACK_URL;
 
 const initializePassport = () => {
-  passport.serializeUser((user, done) => {
-    done(null, user.id);
-  });
+  passport.serializeUser((user, done) => done(null, user.id));
 
   passport.deserializeUser((id, done) => {
     users.find(id, (error, user) => {
-      done(null, user);
+      if (error) {
+        return done(error);
+      }
+      return done(null, user);
     });
   });
 
@@ -32,9 +33,9 @@ const initializePassport = () => {
             refreshToken,
             (error, user) => {
               if (error) {
-                done(error);
+                return done(error);
               }
-              done(null, user);
+              return done(null, user);
             },
           );
         });
