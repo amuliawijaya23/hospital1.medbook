@@ -73,8 +73,10 @@ module.exports = (router) => {
           });
           response.on('end', () => {
             const data = JSON.parse(str);
-            console.log('DATA IS: ', data);
-            res.status(200).json(data).end();
+            res.render('medication', {
+              user: req.user,
+              medications: data.medical_records.medication,
+            });
           });
         });
         postRequest.end();

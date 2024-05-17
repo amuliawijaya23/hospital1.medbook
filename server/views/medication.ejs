@@ -1,0 +1,21 @@
+<h1>User Medication</h1>
+<h3>ID: <%= user.id %></h3>
+<h3>Email: <%= user.email %></h3>
+
+<table>
+  <tr>
+    <th>name</th>
+    <th>dose</th>
+    <th>frequency</th>
+  </tr>
+  <% for (const m of medications) { %>
+  <form action="/oauth/authorize/medication/<%= m.name %>" method="post">
+    <tr>
+      <td><input type="text" name="name" value="<%= m.name %>" /></td>
+      <td><input type="text" name="dose" value="<%= m.dose %>" /></td>
+      <td><input type="text" name="frequency" value="<%= m.frequency %>" /></td>
+      <td><input type="submit" value="submit" /></td>
+    </tr>
+  </form>
+  <% }%>
+</table>
