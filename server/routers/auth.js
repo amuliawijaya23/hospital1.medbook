@@ -1,7 +1,5 @@
 const http = require('http');
-const passport = require('passport');
 const querystring = require('querystring');
-const { getProtectedResource } = require('../helper');
 const { isAuthenticated } = require('../middleware');
 
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -29,12 +27,29 @@ module.exports = (router) => {
     res.json(req.user);
   });
   router.get('/user/info', isAuthenticated, (req, res) => {
-    getProtectedResource('/user/data', req.user.accessToken, (error, data) => {
-      if (error) {
-        return new Error(error.message);
-      }
-      return res.send(data);
+    const options = {
+      host: 'localhost',
+      path: '/user/data',
+      port: '8080',
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${req.user.accessToken}`,
+      },
+    };
+
+    const postRequest = http.request(options, (response) => {
+      let str = '';
+      response.setEncoding('utf-8');
+      response.on('data', (chunk) => {
+        str += chunk;
+      });
+      response.on('end', () => {
+        const data = JSON.parse(str);
+        res.send(data);
+      });
     });
+
+    postRequest.end();
   });
   router.get('/refresh_token', isAuthenticated, (req, res) => {
     const postData = querystring.stringify({

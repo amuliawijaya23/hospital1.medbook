@@ -23,10 +23,6 @@ const initializePassport = () => {
         callbackURL: CALLBACK_URL,
       },
       (accessToken, refreshToken, profile, done) => {
-        console.log(
-          `Auth Completed accessToken: ${accessToken} refreshToken: ${refreshToken} profile: ${profile}`,
-        );
-
         process.nextTick(() => {
           users.updateOrCreate(
             profile,
