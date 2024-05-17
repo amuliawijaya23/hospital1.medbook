@@ -6,6 +6,8 @@
 
 The hospital1.medbook.com client application is designed to interact with the accounts.medbook.com server to manage and update user medical data securely. This application leverages OAuth 2.0 for authentication and authorization to ensure secure access and modification of user information.
 
+The client application communicates with the accounts.medbook server. You can find the server repository here: [accounts.medbook.com](https://github.com/amuliawijaya23/accounts.medbook)
+
 ## Functionality
 
 ---
