@@ -1,0 +1,13 @@
+const { isAuthenticated } = require('../middleware');
+
+module.exports = (router) => {
+  router.get('/', (req, res) => {
+    res.render('index', { user: req.user });
+  });
+  router.get('/account', isAuthenticated, (req, res) => {
+    res.render('account', { user: req.user });
+  });
+  router.get('/login', (req, res) => {
+    res.render('login', { user: req.user });
+  });
+};

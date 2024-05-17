@@ -1,11 +1,13 @@
 const { Router } = require('express');
 
-const api = require('./api');
+const oauth = require('./oauth');
 const auth = require('./auth');
+const site = require('./site');
 
 const router = Router();
 module.exports = () => {
-  api(router);
+  oauth(router);
   auth(router);
+  site(router);
   return router;
 };

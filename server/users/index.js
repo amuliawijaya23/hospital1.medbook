@@ -10,6 +10,7 @@ exports.updateOrCreate = function (profile, accessToken, refreshToken, done) {
     user = {
       id: profile.id,
       email: profile.email,
+      scope: profile.scope,
     };
 
     users[profile.id] = user;
@@ -17,6 +18,7 @@ exports.updateOrCreate = function (profile, accessToken, refreshToken, done) {
 
   user.accessToken = accessToken;
   user.refreshToken = refreshToken;
+  user.scope = profile.scope;
 
   done(null, user);
 };
