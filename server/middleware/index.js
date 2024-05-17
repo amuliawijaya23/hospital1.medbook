@@ -4,3 +4,10 @@ exports.isAuthenticated = (req, res, next) => {
   }
   return next();
 };
+
+exports.isNotAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated) {
+    return res.redirect('/');
+  }
+  return next();
+};

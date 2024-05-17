@@ -1,4 +1,4 @@
-const { isAuthenticated } = require('../middleware');
+const { isAuthenticated, isNotAuthenticated } = require('../middleware');
 
 module.exports = (router) => {
   router.get('/', (req, res) => {
@@ -7,7 +7,7 @@ module.exports = (router) => {
   router.get('/account', isAuthenticated, (req, res) => {
     res.render('account', { user: req.user });
   });
-  router.get('/login', (req, res) => {
+  router.get('/login', isNotAuthenticated, (req, res) => {
     res.render('login', { user: req.user });
   });
 };

@@ -35,6 +35,10 @@ module.exports = (router) => {
     passport.authenticate('medbook', { failureRedirect: '/api/login' }),
     (req, res) => {
       try {
+        if (!req.user) {
+          res.sendStatus(401);
+        }
+
         if (req.user.scope === 'read:userdata') {
           const options = {
             host: 'localhost',
@@ -122,6 +126,10 @@ module.exports = (router) => {
 
   router.get('/oauth/user/data', isAuthenticated, (req, res) => {
     try {
+      if (!req.user) {
+        res.sendStatus(401);
+      }
+
       const options = {
         host: 'localhost',
         path: '/api/user/data',
